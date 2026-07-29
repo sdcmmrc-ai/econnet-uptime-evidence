@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sdcmmrc-ai/econnet-uptime-evidence/schemas/external-uptime.schema.json",
+  "title": "Econnet external uptime evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sequence",
+    "generated_at",
+    "fresh_until",
+    "producer",
+    "observation_window",
+    "current_status",
+    "last_success_at",
+    "last_incident",
+    "uptime_24h_basis_points",
+    "uptime_30d_basis_points",
+    "endpoint_results",
+    "previous_evidence_fingerprint",
+    "evidence_fingerprint",
+    "authentication"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "econnet-observer-external-uptime/1.0.0"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "generated_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "fresh_until": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "producer": {
+      "const": "github-actions-external-uptime"
+    },
+    "observation_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started_at", "ended_at"],
+      "properties": {
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "ended_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "current_status": {
+      "enum": ["healthy", "degraded", "down", "unknown"]
+    },
+    "last_success_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "last_incident": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/incident"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "uptime_24h_basis_points": {
+      "$ref": "#/$defs/basis_points"
+    },
+    "uptime_30d_basis_points": {
+      "$ref": "#/$defs/basis_points"
+    },
+    "endpoint_results": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/endpoint"
+      }
+    },
+    "previous_evidence_fingerprint": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidence_fingerprint": {
+      "$ref": "#/$defs/sha256"
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "key_id", "signature_domain", "signature"],
+      "properties": {
+        "scheme": {
+          "const": "ed25519"
+        },
+        "key_id": {
+          "const": "econnet-uptime-ed25519-2026-01"
+        },
+        "signature_domain": {
+          "const": "econnet-observer-external-uptime/1.0.0"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "basis_points": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "failure_category": {
+      "enum": [
+        "none",
+        "dns_failure",
+        "tls_failure",
+        "root_route_failure",
+        "language_route_failure",
+        "content_missing",
+        "response_slow",
+        "http_5xx",
+        "timeout",
+        "unexpected_redirect",
+        "certificate_expiring_30",
+        "certificate_expiring_14",
+        "certificate_expiring_7"
+      ]
+    },
+    "incident": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "incident_id_hash",
+        "failure_category",
+        "started_at",
+        "recovered_at"
+      ],
+      "properties": {
+        "incident_id_hash": {
+          "$ref": "#/$defs/sha256"
+        },
+        "failure_category": {
+          "$ref": "#/$defs/failure_category"
+        },
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "recovered_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "monitor_id_hash",
+        "endpoint_category",
+        "last_check_at",
+        "current_status",
+        "failure_category",
+        "http_status",
+        "redirect_count",
+        "response_time_ms",
+        "tls_status",
+        "certificate_expires_at",
+        "dns_status",
+        "content_status",
+        "consecutive_failures",
+        "consecutive_successes",
+        "incident_id_hash",
+        "incident_started_at"
+      ],
+      "properties": {
+        "monitor_id_hash": {
+          "$ref": "#/$defs/sha256"
+        },
+        "endpoint_category": {
+          "enum": ["dns", "tls", "route_no", "route_en", "route_ar"]
+        },
+        "last_check_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "current_status": {
+          "enum": ["healthy", "degraded", "down", "unknown"]
+        },
+        "failure_category": {
+          "$ref": "#/$defs/failure_category"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "redirect_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "response_time_ms": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tls_status": {
+          "enum": ["valid", "invalid", "expiring", "not_applicable", "unknown"]
+        },
+        "certificate_expires_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dns_status": {
+          "enum": ["resolved", "failed", "not_applicable", "unknown"]
+        },
+        "content_status": {
+          "enum": ["present", "missing", "not_applicable", "unknown"]
+        },
+        "consecutive_failures": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "consecutive_successes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "incident_id_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "incident_started_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

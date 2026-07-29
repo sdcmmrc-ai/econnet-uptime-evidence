@@ -1,0 +1,14 @@
+{
+  "name": "econnet-uptime-evidence",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "validate": "node scripts/validate-repository.mjs",
+    "secret-scan": "node scripts/secret-scan.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

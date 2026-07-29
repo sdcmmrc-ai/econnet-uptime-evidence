@@ -1,0 +1,122 @@
+name: External uptime
+
+on:
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-uptime-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone source without third-party actions
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+        run: |
+          set -eu
+          git init source
+          cd source
+          git remote add origin "https://github.com/${REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "${REVISION}"
+          git checkout --detach FETCH_HEAD
+      - name: Validate
+        run: |
+          set -eu
+          cd source
+          npm test
+          npm run validate
+          npm run secret-scan
+          git diff --check
+
+  monitor:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    steps:
+      - name: Prepare source and append-only evidence worktree
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+        run: |
+          set -eu
+          git init source
+          cd source
+          git remote add origin "https://github.com/${REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "${REVISION}"
+          git checkout --detach FETCH_HEAD
+          if git ls-remote --exit-code origin refs/heads/evidence >/dev/null 2>&1; then
+            git fetch --no-tags origin refs/heads/evidence:refs/heads/evidence
+            git worktree add ../state evidence
+            printf 'EVIDENCE_SHA=%s\n' "$(git rev-parse evidence)" >> "${GITHUB_ENV}"
+            printf 'EVIDENCE_EXISTED=1\n' >> "${GITHUB_ENV}"
+          else
+            git worktree add -b evidence ../state "${REVISION}"
+            printf 'EVIDENCE_SHA=\n' >> "${GITHUB_ENV}"
+            printf 'EVIDENCE_EXISTED=0\n' >> "${GITHUB_ENV}"
+          fi
+      - name: Probe and produce signed evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          UPTIME_ED25519_PRIVATE_KEY: ${{ secrets.UPTIME_ED25519_PRIVATE_KEY }}
+        run: |
+          set -eu
+          cd source
+          node scripts/publish.mjs --state-root=../state --output=../publish-result.json
+      - name: Publish without rewriting history
+        id: publish
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          PUBLISH="$(node -p "require('./publish-result.json').publish ? '1' : '0'")"
+          if [ "${PUBLISH}" = "1" ]; then
+            cd state
+            REMOTE_SHA="$(git ls-remote origin refs/heads/evidence | cut -f1)"
+            if [ "${EVIDENCE_EXISTED}" = "1" ] && [ "${REMOTE_SHA}" != "${EVIDENCE_SHA}" ]; then
+              echo "evidence branch advanced unexpectedly" >&2
+              exit 1
+            fi
+            if [ "${EVIDENCE_EXISTED}" = "0" ] && [ -n "${REMOTE_SHA}" ]; then
+              echo "evidence branch appeared concurrently" >&2
+              exit 1
+            fi
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add evidence/current.json evidence/checkpoints evidence/incidents
+            git diff --cached --check
+            git commit -m "chore(evidence): publish signed uptime checkpoint"
+            AUTH_HEADER="$(printf 'x-access-token:%s' "${GITHUB_TOKEN}" | base64 -w0)"
+            git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" push origin HEAD:refs/heads/evidence
+            printf 'PUBLISHED_SHA=%s\n' "$(git rev-parse HEAD)" >> "${GITHUB_ENV}"
+          else
+            printf 'PUBLISHED_SHA=%s\n' "${EVIDENCE_SHA}" >> "${GITHUB_ENV}"
+          fi
+      - name: Verify published record and record sanitized candidate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          if [ "$(node -p "require('./publish-result.json').publish ? '1' : '0'")" = "1" ]; then
+            cd source
+            node scripts/verify.mjs ../state/evidence/current.json
+            cd ..
+          fi
+          cd source
+          node scripts/post-status.mjs "${PUBLISHED_SHA}" ../publish-result.json
