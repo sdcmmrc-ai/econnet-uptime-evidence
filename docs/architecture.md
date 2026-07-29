@@ -98,3 +98,13 @@ backup, WAF, or recovery mechanism.
 Before changing this repository to private visibility, scheduled monitoring
 must be reviewed or disabled because private-repository Actions quotas and
 billing differ.
+
+## Repository protection
+
+Protect `main` in **Settings → Branches** with a rule that requires pull
+requests, requires the GitHub Actions `validate` check, and leaves both
+**Allow force pushes** and **Allow deletions** disabled. GitHub may require the
+repository owner to enter sudo mode through an email verification before this
+rule can be saved. Until that owner verification is completed, the workflow's
+remote-tip comparison and non-force push policy protect the separate
+`evidence` branch, but `main` is not platform-enforced as protected.
