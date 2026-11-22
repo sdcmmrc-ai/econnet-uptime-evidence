@@ -1,12 +1,12 @@
 {
   "schema_version": "econnet-observer-external-uptime/1.0.0",
-  "sequence": 672,
-  "generated_at": "2026-11-22T01:39:38Z",
-  "fresh_until": "2026-11-22T02:59:38Z",
+  "sequence": 673,
+  "generated_at": "2026-11-22T08:51:47Z",
+  "fresh_until": "2026-11-22T10:11:47Z",
   "producer": "github-actions-external-uptime",
   "observation_window": {
-    "started_at": "2026-11-22T01:38:33Z",
-    "ended_at": "2026-11-22T01:39:38Z"
+    "started_at": "2026-11-22T08:50:40Z",
+    "ended_at": "2026-11-22T08:51:46Z"
   },
   "current_status": "down",
   "last_success_at": "2026-09-20T06:26:53Z",
@@ -22,7 +22,7 @@
     {
       "monitor_id_hash": "ee5816560bb7f2fd926b78b7d47bf5281a4b7d7795ad5b8275e9520727e05db8",
       "endpoint_category": "dns",
-      "last_check_at": "2026-11-22T01:38:33Z",
+      "last_check_at": "2026-11-22T08:50:40Z",
       "current_status": "healthy",
       "failure_category": "none",
       "http_status": null,
@@ -33,14 +33,14 @@
       "dns_status": "resolved",
       "content_status": "not_applicable",
       "consecutive_failures": 0,
-      "consecutive_successes": 673,
+      "consecutive_successes": 674,
       "incident_id_hash": null,
       "incident_started_at": null
     },
     {
       "monitor_id_hash": "67fafe5bfcc53d87ac96d3c5c293a8c67d38e3d33837247099f7c1040471fd74",
       "endpoint_category": "tls",
-      "last_check_at": "2026-11-22T01:38:33Z",
+      "last_check_at": "2026-11-22T08:50:40Z",
       "current_status": "healthy",
       "failure_category": "none",
       "http_status": null,
@@ -51,24 +51,24 @@
       "dns_status": "not_applicable",
       "content_status": "not_applicable",
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "incident_id_hash": null,
       "incident_started_at": null
     },
     {
       "monitor_id_hash": "e85ff9719c86c2f3096b02ffad2bce20d80ff46511147e5fd62d613027b7d148",
       "endpoint_category": "route_no",
-      "last_check_at": "2026-11-22T01:38:33Z",
+      "last_check_at": "2026-11-22T08:50:40Z",
       "current_status": "down",
       "failure_category": "content_missing",
       "http_status": 200,
       "redirect_count": 0,
-      "response_time_ms": 1016,
+      "response_time_ms": 722,
       "tls_status": "not_applicable",
       "certificate_expires_at": null,
       "dns_status": "not_applicable",
       "content_status": "missing",
-      "consecutive_failures": 311,
+      "consecutive_failures": 312,
       "consecutive_successes": 0,
       "incident_id_hash": "380c7b3236fb9080ddb92181f95b05ecc1cec5f9fb60296c7b1d906f552c9c0d",
       "incident_started_at": "2026-11-21T16:27:54Z"
@@ -76,17 +76,17 @@
     {
       "monitor_id_hash": "1acfea4abf3c63a1145b3758e40f3602573b818e8a5539576a689d6ca8679c5f",
       "endpoint_category": "route_en",
-      "last_check_at": "2026-11-22T01:38:33Z",
+      "last_check_at": "2026-11-22T08:50:40Z",
       "current_status": "down",
       "failure_category": "content_missing",
       "http_status": 200,
       "redirect_count": 0,
-      "response_time_ms": 538,
+      "response_time_ms": 433,
       "tls_status": "not_applicable",
       "certificate_expires_at": null,
       "dns_status": "not_applicable",
       "content_status": "missing",
-      "consecutive_failures": 311,
+      "consecutive_failures": 312,
       "consecutive_successes": 0,
       "incident_id_hash": "380c7b3236fb9080ddb92181f95b05ecc1cec5f9fb60296c7b1d906f552c9c0d",
       "incident_started_at": "2026-11-21T16:27:54Z"
@@ -94,28 +94,28 @@
     {
       "monitor_id_hash": "16e98aac516fe24c913a3330454e44a6e3376ecb1be6241f16a6b16eb3a029e1",
       "endpoint_category": "route_ar",
-      "last_check_at": "2026-11-22T01:38:33Z",
+      "last_check_at": "2026-11-22T08:50:40Z",
       "current_status": "down",
       "failure_category": "content_missing",
       "http_status": 200,
       "redirect_count": 0,
-      "response_time_ms": 609,
+      "response_time_ms": 443,
       "tls_status": "not_applicable",
       "certificate_expires_at": null,
       "dns_status": "not_applicable",
       "content_status": "missing",
-      "consecutive_failures": 311,
+      "consecutive_failures": 312,
       "consecutive_successes": 0,
       "incident_id_hash": "380c7b3236fb9080ddb92181f95b05ecc1cec5f9fb60296c7b1d906f552c9c0d",
       "incident_started_at": "2026-11-21T16:27:54Z"
     }
   ],
-  "previous_evidence_fingerprint": "349ff1f59dfed8a07077224207396fd2b1835b501141415e3022a11c30007338",
-  "evidence_fingerprint": "998efe19231699c64d77cbabc272e134f64238b48ab55f861735c07dc8f535c9",
+  "previous_evidence_fingerprint": "998efe19231699c64d77cbabc272e134f64238b48ab55f861735c07dc8f535c9",
+  "evidence_fingerprint": "6443de8985d5706f21e1eb34635fe0129db2ea57acfe18ab6d9d0dfec9d2e610",
   "authentication": {
     "scheme": "ed25519",
     "key_id": "econnet-uptime-ed25519-2026-01",
     "signature_domain": "econnet-observer-external-uptime/1.0.0",
-    "signature": "IjI3+AY+giiOLy4EjJrAjChdpVialOc9Y2DrM3Q10JbxZZzmw1CMiSUG/iIyVFPli8OJ5Ks0JembOjPAsXloBQ=="
+    "signature": "DDyS7O/RNdO+oeJMvPGLlOcPiJZwQUYOgTA55/UpP6L+gVyp1EC1QrfFML722dLg79FyBr5xP2LM62GLZDECAA=="
   }
 }
